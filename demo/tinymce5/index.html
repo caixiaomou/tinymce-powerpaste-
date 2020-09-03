@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script src="./tinymce/tinymce.min.js"></script>
+</head>
+<body>
+<div>
+	<div id="tinymce"></div>
+</div>
+<script>
+  console.log(123)
+  function ajaxUpload(){
+    return Promise.resolve({
+      uploadedImageUrl: 'https://www.xiyoukeji.com/images/logo_xs.gif'
+    })
+  }
+	 tinymce.init({
+    selector: '#tinymce',
+    language: 'zh_CN', // 需要在官网自己下载一个全局的langs包。同时我提供的powerpaste本身自带一个langs包里面含中文，所以可以100%支持中文。
+    plugins: [
+      'powerpaste', // plugins中，用powerpaste替换原来的paste
+      //...
+    ],
+    powerpaste_word_import: 'propmt',// 参数可以是propmt, merge, clear，效果自行切换对比
+    powerpaste_html_import: 'propmt',// propmt, merge, clear
+    powerpaste_allow_local_images: true,
+    paste_data_images: true,
+    images_upload_handler: function (blobInfo, success, failure) {
+      // 这个函数主要处理word中的图片，并自动完成上传；
+      // ajaxUpload是自己定义的一个函数；在回调中，记得调用success函数，传入上传好的图片地址；
+      // blobInfo.blob() 得到图片的file对象；
+      ajaxUpload(blobInfo.blob()).then((data) => {
+         // 上传成功后，调用success函数传入图片地址
+         success(data.uploadedImageUrl)
+       })
+     },
+    // tinymce的其他配置参数
+  })
+</script>
+</body>
+</html>
